@@ -22,7 +22,16 @@ import numpy as np
 import pandas as pd
 import timesfm
 
-from .utils import ExperimentHandler
+try:
+  # When executed as a module within the package
+  from .utils import ExperimentHandler
+except Exception:
+  try:
+    # When imported as a top-level package module
+    from v1.experiments.extended_benchmarks.utils import ExperimentHandler
+  except Exception:
+    # When executed directly as a script from the working dir
+    from utils import ExperimentHandler
 
 dataset_names = [
     "m1_monthly",
@@ -86,6 +95,8 @@ QUANTILES = list(np.arange(1, 10) / 10.0)
 
 
 def main():
+  os.environ['GLUONTS_DATASET_PATH'] = '/scratch/wd04/sm0074/timesfm/gluonts_cache'
+  os.environ['HF_HUB_OFFLINE'] = '1'
   results_list = []
   model_path = _MODEL_PATH.value
   num_layers = 20
@@ -98,17 +109,22 @@ def main():
     max_context_len = 2048
     context_dict = context_dict_v2
 
-  tfm = timesfm.TimesFm(
+    # If running offline, provide a direct local checkpoint path so the loader
+    # doesn't attempt Hub lookups. Adjust this path to the downloaded checkpoint
+    # file present under `/scratch/wd04/sm0074/timesfm/models`.
+    # Use the PyTorch checkpoint downloaded locally for offline compute nodes.
+    local_checkpoint_path = "/scratch/wd04/sm0074/timesfm/models_pytorch/torch_model.ckpt"
+    tfm = timesfm.TimesFm(
       hparams=timesfm.TimesFmHparams(
-          backend="gpu",
-          per_core_batch_size=32,
-          horizon_len=128,
-          num_layers=num_layers,
-          context_len=max_context_len,
-          use_positional_embedding=use_positional_embedding,
+        backend="gpu",
+        per_core_batch_size=32,
+        horizon_len=128,
+        num_layers=num_layers,
+        context_len=max_context_len,
+        use_positional_embedding=use_positional_embedding,
       ),
-      checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path),
-  )
+      checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=local_checkpoint_path),
+    )
   run_id = np.random.randint(100000)
   model_name = "timesfm"
   for dataset in dataset_names:

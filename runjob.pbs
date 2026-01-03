@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -P wd04
+#PBS -q gpuvolta
+#PBS -l ncpus=12
+#PBS -l ngpus=1
+#PBS -l mem=64GB
+#PBS -l jobfs=1GB
+#PBS -l walltime=10:00:00
+#PBS -l storage=scratch/wd04
+#PBS -l wd
+#PBS -M s4160163@student.rmit.edu.au
+#PBS -m abe
+#PBS -e logs/timesfm_test_2.err
+#PBS -o logs/timesfm_test_2.out
+
+mkdir -p logs
+exec > >(tee -a logs/timesfm_test_2.log) 2> >(tee -a logs/timesfm_test_2_errors.log >&2)
+export PYTHONUNBUFFERED=1
+
+cd /scratch/wd04/sm0074/timesfm
+
+# Activate UV and virtual environment
+source /scratch/wd04/sm0074/uv/env
+source .venv/bin/activate
+
+echo "--------- Running TimesFM Benchmark"
+export PYTHONPATH="${PYTHONPATH}:/scratch/wd04/sm0074/timesfm"
+python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir /scratch/wd04/sm0074/timesfm/results

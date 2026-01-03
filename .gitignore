@@ -7,3 +7,6 @@ datasets/
 results/
 timesfm_jax.egg-info/
 development_setup.md
+models/
+models_pytorch/
+src/timesfm.egg-info/
