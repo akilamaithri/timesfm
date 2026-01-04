@@ -21,6 +21,11 @@ from absl import flags
 import numpy as np
 import pandas as pd
 import timesfm
+import torch
+try:
+  from safetensors import torch as safetorch  # type: ignore
+except Exception:
+  safetorch = None
 
 try:
   # When executed as a module within the package
@@ -116,8 +121,37 @@ def main():
     max_context_len = 1024
     context_dict = context_dict_v1
     # Try to load using the 2.5 Torch helper if available; fall back to generic loader
+    # If the local checkpoint is a safetensors file, attempt to convert it to
+    # a PyTorch checkpoint on-disk so existing loaders (which call torch.load)
+    # can succeed in an offline environment.
+    ckpt_path = None
+    if os.path.exists(local_ckpt_2p5):
+      ckpt_path = local_ckpt_2p5
+    # If safetensors file present and safetensors installed, convert it
+    if ckpt_path and ckpt_path.endswith(".safetensors"):
+      if safetorch is None:
+        print("safetensors not installed; cannot load .safetensors checkpoint.\n"
+              "Install safetensors in the environment or provide a PyTorch checkpoint.", flush=True)
+      else:
+        try:
+          print(f"Converting safetensors checkpoint {ckpt_path} -> torch .pt temporary file", flush=True)
+          state = safetorch.load_file(ckpt_path, device="cpu")
+          converted = f"{ckpt_path}.pt"
+          torch.save(state, converted)
+          ckpt_path = converted
+          print(f"Converted checkpoint saved to {converted}", flush=True)
+        except Exception as e:
+          print(f"Failed to convert safetensors checkpoint: {e}", flush=True)
+
     try:
-      tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True, checkpoint_path=local_ckpt_2p5)
+      # First try the convenience loader for the 2.5 class if present.
+      if hasattr(timesfm, "TimesFM_2p5_200M_torch"):
+        if ckpt_path:
+          tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True, checkpoint_path=ckpt_path)
+        else:
+          tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True)
+      else:
+        raise AttributeError("TimesFM_2p5_200M_torch loader not present in timesfm package")
     except Exception:
       try:
         tfm = timesfm.TimesFm(
@@ -129,7 +163,7 @@ def main():
             context_len=max_context_len,
             use_positional_embedding=use_positional_embedding,
           ),
-          checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=local_ckpt_2p5),
+          checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=ckpt_path),
         )
       except Exception as e:
         print(f"Failed to load 2.5 model offline: {e}", flush=True)
