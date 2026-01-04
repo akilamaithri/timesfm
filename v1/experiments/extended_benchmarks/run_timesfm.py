@@ -150,7 +150,13 @@ def main():
       if os.path.isdir(local_snapshot_2p5):
         # Attempt to load using the local snapshot directory so config and weights match.
         if hasattr(timesfm, "TimesFM_2p5_200M_torch"):
-          tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(local_snapshot_2p5, local_files_only=True)
+          # If we converted a safetensors file to a .pt earlier, prefer that
+          # explicit checkpoint_path so the loader doesn't attempt to torch.load
+          # the original safetensors file.
+          if ckpt_path and ckpt_path.endswith('.pt'):
+            tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(local_snapshot_2p5, local_files_only=True, checkpoint_path=ckpt_path)
+          else:
+            tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(local_snapshot_2p5, local_files_only=True)
         else:
           # Fallback to generic loader: point to the actual model file inside
           # the snapshot (do not pass the directory itself as a file path).
@@ -162,6 +168,10 @@ def main():
               break
           if snapshot_model_file is None:
             raise FileNotFoundError(f"No model file found inside snapshot {local_snapshot_2p5}")
+          # If we converted safetensors to a .pt earlier, prefer that file when
+          # instantiating the generic loader so it doesn't try to torch.load the
+          # safetensors directly.
+          load_file = ckpt_path if (ckpt_path and ckpt_path.endswith('.pt')) else snapshot_model_file
           tfm = timesfm.TimesFm(
             hparams=timesfm.TimesFmHparams(
               backend=_BACKEND.value,
@@ -171,7 +181,7 @@ def main():
               context_len=max_context_len,
               use_positional_embedding=use_positional_embedding,
             ),
-            checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=snapshot_model_file),
+            checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=load_file),
           )
       else:
         # Existing behavior: try using a single checkpoint file (converted .pt or .safetensors)
