@@ -10,11 +10,11 @@
 #PBS -l wd
 #PBS -M s4160163@student.rmit.edu.au
 #PBS -m abe
-#PBS -e logs/timesfm_test_2.err
-#PBS -o logs/timesfm_test_2.out
+#PBS -e logs/jan4_5.err
+#PBS -o logs/jan4_5.out
 
 mkdir -p logs
-exec > >(tee -a logs/timesfm_test_2.log) 2> >(tee -a logs/timesfm_test_2_errors.log >&2)
+exec > >(tee -a logs/jan4_5.log) 2> >(tee -a logs/jan4_5_errors.log >&2)
 export PYTHONUNBUFFERED=1
 
 cd /scratch/wd04/sm0074/timesfm
@@ -44,6 +44,31 @@ else
 		fi
 	else
 		echo "No local safetensors wheel found at third_party/safetensors-*.whl.\nPlease download the wheel on a machine with internet and place it in third_party/ before submitting the job." >&2
+		exit 1
+	fi
+fi
+
+# Pre-flight: ensure `timesfm` package matching the checkpoint is available in the venv.
+# If missing, try to install from a local wheel under `third_party/` (offline-friendly).
+echo "Checking for timesfm package in venv"
+if .venv/bin/python -c "import timesfm" >/dev/null 2>&1; then
+	echo "timesfm available in venv"
+else
+	echo "timesfm not found in venv. Attempting local wheel install if available."
+	if ls third_party/timesfm-*.whl >/dev/null 2>&1; then
+		for w in third_party/timesfm-*.whl; do
+			echo "Installing timesfm from $w"
+			.venv/bin/python -m pip install --no-index --no-deps "$w" && break
+		done
+		# verify install
+		if .venv/bin/python -c "import timesfm" >/dev/null 2>&1; then
+			echo "timesfm installed successfully"
+		else
+			echo "Failed to install timesfm from local wheel; please provide a valid wheel in third_party/ or install timesfm into .venv before submitting job" >&2
+			exit 1
+		fi
+	else
+		echo "No local timesfm wheel found at third_party/timesfm-*.whl.\nPlease build the wheel from the repository and place it in third_party/ before submitting the job." >&2
 		exit 1
 	fi
 fi
