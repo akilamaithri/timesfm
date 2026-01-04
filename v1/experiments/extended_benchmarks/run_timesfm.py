@@ -112,6 +112,8 @@ def main():
   # Default local checkpoint paths (already downloaded to the node).
   local_ckpt_2p5 = "/scratch/wd04/sm0074/timesfm/models_pytorch/model.safetensors"
   local_ckpt_2p0 = "/scratch/wd04/sm0074/timesfm/models_pytorch/torch_model.ckpt"
+  # Local full snapshot directory (contains config.json + model.safetensors)
+  local_snapshot_2p5 = "/scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5"
 
   tfm = None
   # Prefer 2.5 model if requested
@@ -143,31 +145,37 @@ def main():
         except Exception as e:
           print(f"Failed to convert safetensors checkpoint: {e}", flush=True)
 
+    # Prefer loading from a local full snapshot if present (contains config + model)
     try:
-      # First try the convenience loader for the 2.5 class if present.
-      if hasattr(timesfm, "TimesFM_2p5_200M_torch"):
-        if ckpt_path:
-          tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True, checkpoint_path=ckpt_path)
+      if os.path.isdir(local_snapshot_2p5):
+        # Attempt to load using the local snapshot directory so config and weights match.
+        if hasattr(timesfm, "TimesFM_2p5_200M_torch"):
+          tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(local_snapshot_2p5, local_files_only=True)
         else:
-          tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True)
+          # Fallback to generic loader pointing to repo dir
+          tfm = timesfm.TimesFm(
+            hparams=timesfm.TimesFmHparams(
+              backend=_BACKEND.value,
+              per_core_batch_size=32,
+              horizon_len=_HORIZON.value,
+              num_layers=num_layers,
+              context_len=max_context_len,
+              use_positional_embedding=use_positional_embedding,
+            ),
+            checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=local_snapshot_2p5),
+          )
       else:
-        raise AttributeError("TimesFM_2p5_200M_torch loader not present in timesfm package")
-    except Exception:
-      try:
-        tfm = timesfm.TimesFm(
-          hparams=timesfm.TimesFmHparams(
-            backend=_BACKEND.value,
-            per_core_batch_size=32,
-            horizon_len=_HORIZON.value,
-            num_layers=num_layers,
-            context_len=max_context_len,
-            use_positional_embedding=use_positional_embedding,
-          ),
-          checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=ckpt_path),
-        )
-      except Exception as e:
-        print(f"Failed to load 2.5 model offline: {e}", flush=True)
-        return
+        # Existing behavior: try using a single checkpoint file (converted .pt or .safetensors)
+        if hasattr(timesfm, "TimesFM_2p5_200M_torch"):
+          if ckpt_path:
+            tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True, checkpoint_path=ckpt_path)
+          else:
+            tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True)
+        else:
+          raise AttributeError("TimesFM_2p5_200M_torch loader not present in timesfm package")
+    except Exception as e:
+      print(f"Failed to load 2.5 model offline: {e}", flush=True)
+      return
   elif "2.0" in model_path:
     # settings for 2.0
     num_layers = 50
