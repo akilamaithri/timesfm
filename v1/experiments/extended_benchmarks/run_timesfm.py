@@ -83,7 +83,7 @@ context_dict_v1 = {
     "m4_yearly": 64,
 }
 
-_MODEL_PATH = flags.DEFINE_string("model_path", "google/timesfm-2.0-500m-jax",
+_MODEL_PATH = flags.DEFINE_string("model_path", "google/timesfm-2.5-200m-pytorch",
                                   "Path to model")
 _BATCH_SIZE = flags.DEFINE_integer("batch_size", 64, "Batch size")
 _HORIZON = flags.DEFINE_integer("horizon", 128, "Horizon")
@@ -103,63 +103,134 @@ def main():
   max_context_len = 512
   use_positional_embedding = True
   context_dict = context_dict_v1
-  if "2.0" in model_path:
+
+  # Default local checkpoint paths (already downloaded to the node).
+  local_ckpt_2p5 = "/scratch/wd04/sm0074/timesfm/models_pytorch/model.safetensors"
+  local_ckpt_2p0 = "/scratch/wd04/sm0074/timesfm/models_pytorch/torch_model.ckpt"
+
+  tfm = None
+  # Prefer 2.5 model if requested
+  if "2.5" in model_path:
+    # 2.5 is a smaller PyTorch model; set smaller defaults
+    num_layers = 20
+    max_context_len = 1024
+    context_dict = context_dict_v1
+    # Try to load using the 2.5 Torch helper if available; fall back to generic loader
+    try:
+      tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_path, local_files_only=True, checkpoint_path=local_ckpt_2p5)
+    except Exception:
+      try:
+        tfm = timesfm.TimesFm(
+          hparams=timesfm.TimesFmHparams(
+            backend=_BACKEND.value,
+            per_core_batch_size=32,
+            horizon_len=_HORIZON.value,
+            num_layers=num_layers,
+            context_len=max_context_len,
+            use_positional_embedding=use_positional_embedding,
+          ),
+          checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=local_ckpt_2p5),
+        )
+      except Exception as e:
+        print(f"Failed to load 2.5 model offline: {e}", flush=True)
+        return
+  elif "2.0" in model_path:
+    # settings for 2.0
     num_layers = 50
     use_positional_embedding = False
     max_context_len = 2048
     context_dict = context_dict_v2
-
     # If running offline, provide a direct local checkpoint path so the loader
     # doesn't attempt Hub lookups. Adjust this path to the downloaded checkpoint
     # file present under `/scratch/wd04/sm0074/timesfm/models`.
-    # Use the PyTorch checkpoint downloaded locally for offline compute nodes.
-    local_checkpoint_path = "/scratch/wd04/sm0074/timesfm/models_pytorch/torch_model.ckpt"
-    tfm = timesfm.TimesFm(
-      hparams=timesfm.TimesFmHparams(
-        backend="gpu",
-        per_core_batch_size=32,
-        horizon_len=128,
-        num_layers=num_layers,
-        context_len=max_context_len,
-        use_positional_embedding=use_positional_embedding,
-      ),
-      checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=local_checkpoint_path),
-    )
+    try:
+      tfm = timesfm.TimesFm(
+        hparams=timesfm.TimesFmHparams(
+          backend=_BACKEND.value,
+          per_core_batch_size=32,
+          horizon_len=_HORIZON.value,
+          num_layers=num_layers,
+          context_len=max_context_len,
+          use_positional_embedding=use_positional_embedding,
+        ),
+        checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=local_ckpt_2p0),
+      )
+    except Exception as e:
+      print(f"Failed to load 2.0 model offline: {e}", flush=True)
+      return
+  else:
+    # Generic attempt for other model strings
+    try:
+      tfm = timesfm.TimesFm(
+        hparams=timesfm.TimesFmHparams(
+          backend=_BACKEND.value,
+          per_core_batch_size=32,
+          horizon_len=_HORIZON.value,
+          num_layers=num_layers,
+          context_len=max_context_len,
+          use_positional_embedding=use_positional_embedding,
+        ),
+        checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path),
+      )
+    except Exception as e:
+      print(f"Failed to load model {model_path}: {e}", flush=True)
+      return
   run_id = np.random.randint(100000)
   model_name = "timesfm"
+  skipped = []
+  processed = 0
   for dataset in dataset_names:
     print(f"Evaluating model {model_name} on dataset {dataset}", flush=True)
-    exp = ExperimentHandler(dataset, quantiles=QUANTILES)
+    try:
+      exp = ExperimentHandler(dataset, quantiles=QUANTILES)
+    except Exception as e:
+      print(f"Skipping dataset {dataset}: failed to load experiment handler: {e}", flush=True)
+      skipped.append(dataset)
+      continue
 
     if dataset in context_dict:
       context_len = context_dict[dataset]
     else:
       context_len = max_context_len
 
-    train_df = exp.train_df
-    freq = exp.freq
-    init_time = time.time()
-    fcsts_df = tfm.forecast_on_df(
-        inputs=train_df,
-        freq=freq,
-        value_name="y",
-        model_name=model_name,
-        forecast_context_len=context_len,
-        num_jobs=_NUM_JOBS.value,
-        normalize=True,
-    )
-    total_time = time.time() - init_time
-    time_df = pd.DataFrame({"time": [total_time], "model": model_name})
-    results = exp.evaluate_from_predictions(models=[model_name],
-                                            fcsts_df=fcsts_df,
-                                            times_df=time_df)
-    print(results, flush=True)
-    results_list.append(results)
-    results_full = pd.concat(results_list)
-    save_path = os.path.join(_SAVE_DIR.value, str(run_id))
-    print(f"Saving results to {save_path}", flush=True)
-    os.makedirs(save_path, exist_ok=True)
-    results_full.to_csv(f"{save_path}/results.csv")
+    try:
+      train_df = exp.train_df
+      freq = exp.freq
+      init_time = time.time()
+      fcsts_df = tfm.forecast_on_df(
+          inputs=train_df,
+          freq=freq,
+          value_name="y",
+          model_name=model_name,
+          forecast_context_len=context_len,
+          num_jobs=_NUM_JOBS.value,
+          normalize=True,
+      )
+      total_time = time.time() - init_time
+      time_df = pd.DataFrame({"time": [total_time], "model": model_name})
+      results = exp.evaluate_from_predictions(models=[model_name],
+                                              fcsts_df=fcsts_df,
+                                              times_df=time_df)
+      print(results, flush=True)
+      results_list.append(results)
+      processed += 1
+    except Exception as e:
+      print(f"Failed during evaluation for dataset {dataset}: {e}", flush=True)
+      skipped.append(dataset)
+      continue
+
+  # If nothing processed, exit gracefully
+  if processed == 0:
+    print("No datasets were successfully processed. Exiting gracefully.", flush=True)
+    return
+
+  results_full = pd.concat(results_list)
+  # Timestamped filename so multiple runs don't clobber each other
+  timestamp = time.strftime("%Y%m%dT%H%M%S")
+  save_path = os.path.join(_SAVE_DIR.value, str(run_id))
+  print(f"Saving results to {save_path}", flush=True)
+  os.makedirs(save_path, exist_ok=True)
+  results_full.to_csv(f"{save_path}/results_{timestamp}.csv")
 
 
 if __name__ == "__main__":
