@@ -152,7 +152,16 @@ def main():
         if hasattr(timesfm, "TimesFM_2p5_200M_torch"):
           tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(local_snapshot_2p5, local_files_only=True)
         else:
-          # Fallback to generic loader pointing to repo dir
+          # Fallback to generic loader: point to the actual model file inside
+          # the snapshot (do not pass the directory itself as a file path).
+          snapshot_model_file = None
+          for candidate in ("model.safetensors", "pytorch_model.bin", "pytorch_model.pt", "torch_model.ckpt"):
+            cand_path = os.path.join(local_snapshot_2p5, candidate)
+            if os.path.exists(cand_path):
+              snapshot_model_file = cand_path
+              break
+          if snapshot_model_file is None:
+            raise FileNotFoundError(f"No model file found inside snapshot {local_snapshot_2p5}")
           tfm = timesfm.TimesFm(
             hparams=timesfm.TimesFmHparams(
               backend=_BACKEND.value,
@@ -162,7 +171,7 @@ def main():
               context_len=max_context_len,
               use_positional_embedding=use_positional_embedding,
             ),
-            checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=local_snapshot_2p5),
+            checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id=model_path, path=snapshot_model_file),
           )
       else:
         # Existing behavior: try using a single checkpoint file (converted .pt or .safetensors)
