@@ -23,6 +23,33 @@ cd /scratch/wd04/sm0074/timesfm
 source /scratch/wd04/sm0074/uv/env
 source .venv/bin/activate
 
+# Pre-flight: ensure `safetensors` is available in the venv for offline runs.
+# If missing, try to install from a local wheel under `third_party/`.
+echo "Checking for safetensors in venv"
+if .venv/bin/python -c "import safetensors, safetensors.torch" >/dev/null 2>&1; then
+	echo "safetensors available in venv"
+else
+	echo "safetensors not found in venv. Attempting local wheel install if available."
+	if ls third_party/safetensors-*.whl >/dev/null 2>&1; then
+		for w in third_party/safetensors-*.whl; do
+			echo "Installing safetensors from $w"
+			.venv/bin/python -m pip install "$w" && break
+		done
+		# verify install
+		if .venv/bin/python -c "import safetensors, safetensors.torch" >/dev/null 2>&1; then
+			echo "safetensors installed successfully"
+		else
+			echo "Failed to install safetensors from local wheel; please provide a valid wheel in third_party/ or install safetensors into .venv before submitting job" >&2
+			exit 1
+		fi
+	else
+		echo "No local safetensors wheel found at third_party/safetensors-*.whl.\nPlease download the wheel on a machine with internet and place it in third_party/ before submitting the job." >&2
+		exit 1
+	fi
+fi
+
 echo "--------- Running TimesFM Benchmark"
 export PYTHONPATH="${PYTHONPATH}:/scratch/wd04/sm0074/timesfm"
-python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir /scratch/wd04/sm0074/timesfm/results
+# python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir /scratch/wd04/sm0074/timesfm/results
+
+python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir=/scratch/wd04/sm0074/timesfm/results
