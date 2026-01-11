@@ -3,19 +3,27 @@
 #PBS -q gpuvolta
 #PBS -l ncpus=12
 #PBS -l ngpus=1
-#PBS -l mem=64GB
+#PBS -l mem=128GB
 #PBS -l jobfs=1GB
 #PBS -l walltime=10:00:00
 #PBS -l storage=scratch/wd04
 #PBS -l wd
 #PBS -M s4160163@student.rmit.edu.au
 #PBS -m abe
-#PBS -e logs/jan4_5.err
-#PBS -o logs/jan4_5.out
+#PBS -e logs/jan11_5.err
+#PBS -o logs/jan11_5.out
 
 mkdir -p logs
-exec > >(tee -a logs/jan4_5.log) 2> >(tee -a logs/jan4_5_errors.log >&2)
+exec > >(tee -a logs/jan11_5.log) 2> >(tee -a logs/jan11_5_errors.log >&2)
 export PYTHONUNBUFFERED=1
+
+# CRITICAL: Limit all forms of multiprocessing to prevent worker explosion
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+export GLUONTS_NUM_WORKERS=0
+export GLUONTS_POOL_WORKERS=1  # Force single-threaded dataset loading
 
 cd /scratch/wd04/sm0074/timesfm
 
@@ -73,8 +81,16 @@ else
 	fi
 fi
 
-echo "--------- Running TimesFM Benchmark"
+echo "--------- Running TimesFM 2.5 Benchmark"
 export PYTHONPATH="${PYTHONPATH}:/scratch/wd04/sm0074/timesfm"
-# python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir /scratch/wd04/sm0074/timesfm/results
+export GLUONTS_NUM_WORKERS=0
 
-python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir=/scratch/wd04/sm0074/timesfm/results
+# Run with timeout wrapper to detect hangs (kill if no output for 30 minutes)
+timeout --preserve-status --kill-after=60s 9h python v1/experiments/extended_benchmarks/run_timesfm_2p5.py --save_dir=/scratch/wd04/sm0074/timesfm/results || {
+    exit_code=$?
+    if [ $exit_code -eq 124 ] || [ $exit_code -eq 137 ]; then
+        echo "ERROR: Job timed out or was killed (exit code $exit_code)" >&2
+        exit 1
+    fi
+    exit $exit_code
+}

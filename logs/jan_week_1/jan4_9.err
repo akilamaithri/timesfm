@@ -1,0 +1,117 @@
+WARNING:2026-01-04 19:10:18,353:jax._src.xla_bridge:852: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:jax._src.xla_bridge:An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+
+------------------------------------------------------------------------
+Job 157564479 has exceeded memory allocation on node gadi-gpu-v100-0104.gadi.nci.org.au
+Process "bash", pid 2502903, rss 3428352, vmem 23945216
+Process "157564479.gadi-", pid 2503069, rss 3170304, vmem 10256384
+Process "157564479.gadi-", pid 2503075, rss 2138112, vmem 10256384
+Process "157564479.gadi-", pid 2503076, rss 2138112, vmem 10256384
+Process "tee", pid 2503077, rss 966656, vmem 4587520
+Process "tee", pid 2503078, rss 991232, vmem 4587520
+Process "python", pid 2503880, rss 2798350336, vmem 17706659840
+Process "python", pid 2504513, rss 11624448, vmem 278298624
+Process "python", pid 2504514, rss 1498021888, vmem 10826866688
+Process "python", pid 2504527, rss 1407803392, vmem 6060011520
+Process "python", pid 2504528, rss 1317302272, vmem 6006534144
+Process "python", pid 2504529, rss 1412046848, vmem 6060023808
+Process "python", pid 2504530, rss 1224110080, vmem 5868961792
+Process "python", pid 2504531, rss 1098809344, vmem 5750853632
+Process "python", pid 2504532, rss 1474150400, vmem 10805813248
+Process "python", pid 2504533, rss 1476009984, vmem 10807922688
+Process "python", pid 2504534, rss 1123667968, vmem 5763956736
+Process "python", pid 2504535, rss 1143119872, vmem 5790162944
+Process "python", pid 2504536, rss 1379360768, vmem 6060023808
+Process "python", pid 2504537, rss 1030983680, vmem 5672140800
+Process "python", pid 2504538, rss 1087320064, vmem 5731176448
+Process "python", pid 2504539, rss 1474043904, vmem 10806845440
+Process "python", pid 2504540, rss 1302552576, vmem 5947514880
+Process "python", pid 2504541, rss 646684672, vmem 5290967040
+Process "python", pid 2504542, rss 1471967232, vmem 10804879360
+Process "python", pid 2504543, rss 1116643328, vmem 5757411328
+Process "python", pid 2504544, rss 1370341376, vmem 6058962944
+Process "python", pid 2504545, rss 598470656, vmem 5239554048
+Process "python", pid 2504546, rss 941322240, vmem 5593473024
+Process "python", pid 2504547, rss 1335586816, vmem 6006644736
+Process "python", pid 2504548, rss 1471987712, vmem 10804879360
+Process "python", pid 2504549, rss 1020387328, vmem 5672140800
+Process "python", pid 2504550, rss 796160000, vmem 5435072512
+Process "python", pid 2504551, rss 907210752, vmem 5554167808
+Process "python", pid 2504552, rss 1006764032, vmem 5645930496
+Process "python", pid 2504553, rss 1011740672, vmem 5652484096
+Process "python", pid 2504554, rss 955092992, vmem 5600059392
+Process "python", pid 2504555, rss 1365708800, vmem 6006513664
+Process "python", pid 2504556, rss 1470873600, vmem 10803216384
+Process "python", pid 2504557, rss 755904512, vmem 5395886080
+Process "python", pid 2504558, rss 852602880, vmem 5495123968
+Process "python", pid 2504559, rss 1436958720, vmem 10566479872
+Process "python", pid 2504560, rss 596512768, vmem 5239427072
+Process "python", pid 2504573, rss 722546688, vmem 5364019200
+Process "python", pid 2504574, rss 1471930368, vmem 10804875264
+Process "python", pid 2504575, rss 578060288, vmem 5218717696
+Process "python", pid 2504576, rss 601931776, vmem 5246119936
+Process "python", pid 2504577, rss 1112920064, vmem 5757415424
+Process "python", pid 2504578, rss 1471016960, vmem 10803212288
+Process "python", pid 2504579, rss 687235072, vmem 5330173952
+Process "python", pid 2504580, rss 924377088, vmem 5567377408
+Process "python", pid 2504581, rss 562487296, vmem 5205622784
+Process "python", pid 2504582, rss 748777472, vmem 5396942848
+Process "python", pid 2504583, rss 1480945664, vmem 10811068416
+Process "python", pid 2504584, rss 636514304, vmem 5278785536
+Process "python", pid 2504585, rss 755404800, vmem 5395865600
+Process "python", pid 2504586, rss 623288320, vmem 5278793728
+Process "python", pid 2504587, rss 1092354048, vmem 5750947840
+Process "python", pid 2504588, rss 646529024, vmem 5291876352
+Process "python", pid 2504589, rss 597352448, vmem 5238382592
+Process "python", pid 2504590, rss 1248038912, vmem 5888540672
+Process "python", pid 2504591, rss 583315456, vmem 5239590912
+Process "python", pid 2504592, rss 882196480, vmem 5527941120
+Process "python", pid 2504593, rss 566132736, vmem 5206675456
+Process "python", pid 2504594, rss 609939456, vmem 5251497984
+Process "python", pid 2504595, rss 946237440, vmem 5593595904
+Process "python", pid 2504596, rss 970448896, vmem 5613309952
+Process "python", pid 2504597, rss 698277888, vmem 5337772032
+Process "python", pid 2504598, rss 625610752, vmem 5277720576
+Process "python", pid 2504599, rss 937832448, vmem 5593604096
+Process "python", pid 2504600, rss 586903552, vmem 5239459840
+Process "python", pid 2504601, rss 605708288, vmem 5246111744
+Process "python", pid 2504602, rss 623464448, vmem 5278765056
+Process "python", pid 2504603, rss 587776000, vmem 5239447552
+Process "python", pid 2504604, rss 647073792, vmem 5291884544
+Process "python", pid 2504605, rss 615976960, vmem 5259264000
+Process "python", pid 2504606, rss 580325376, vmem 5239459840
+Process "python", pid 2504607, rss 669925376, vmem 5318246400
+Process "python", pid 2504608, rss 655007744, vmem 5297393664
+Process "python", pid 2504609, rss 628170752, vmem 5277720576
+Process "python", pid 2504610, rss 600637440, vmem 5246005248
+Process "python", pid 2504611, rss 619667456, vmem 5278765056
+Process "python", pid 2504612, rss 609071104, vmem 5252538368
+Process "python", pid 2504613, rss 569458688, vmem 5213241344
+Process "python", pid 2504614, rss 647475200, vmem 5290835968
+Process "python", pid 2504627, rss 626814976, vmem 5278785536
+Process "python", pid 2504628, rss 632848384, vmem 5278773248
+Process "python", pid 2504629, rss 664039424, vmem 5318139904
+Process "python", pid 2504630, rss 626130944, vmem 5277720576
+Process "python", pid 2504631, rss 626794496, vmem 5277720576
+Process "python", pid 2504632, rss 629063680, vmem 5278785536
+Process "python", pid 2504633, rss 673792000, vmem 5317058560
+Process "python", pid 2504634, rss 576110592, vmem 5219794944
+Process "python", pid 2504635, rss 607649792, vmem 5252710400
+Process "python", pid 2504636, rss 687423488, vmem 5330321408
+Process "python", pid 2504637, rss 579833856, vmem 5238382592
+Process "python", pid 2504638, rss 577650688, vmem 5218848768
+Process "python", pid 2504639, rss 778366976, vmem 5435224064
+Process "python", pid 2504640, rss 638246912, vmem 5278785536
+Process "python", pid 2504641, rss 613867520, vmem 5259096064
+Process "python", pid 2504647, rss 645840896, vmem 5291900928
+Process "python", pid 2504655, rss 617869312, vmem 5258055680
+Process "python", pid 2504656, rss 567500800, vmem 5213224960
+Process "python", pid 2504657, rss 609632256, vmem 5251506176
+------------------------------------------------------------------------
+For more information visit https://opus.nci.org.au/x/SwGRAQ
+------------------------------------------------------------------------
+/local/spool/pbs/mom_priv/jobs/157564479.gadi-pbs.SC: line 80: 2503880 Killed                  python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir=/scratch/wd04/sm0074/timesfm/results

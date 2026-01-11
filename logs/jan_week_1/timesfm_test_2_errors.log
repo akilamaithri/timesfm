@@ -135,3 +135,11 @@ Traceback (most recent call last):
   File "/scratch/wd04/sm0074/timesfm/v1/experiments/extended_benchmarks/utils.py", line 108, in _maybe_download_m3_or_m5_file
     from datasetsforecast.m3 import M3
 ModuleNotFoundError: No module named 'datasetsforecast'
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+WARNING:root:Loading with weights_only=True failed (Weights only load failed. In PyTorch 2.6, we changed the default value of the `weights_only` argument in `torch.load` from `False` to `True`. Re-running `torch.load` with `weights_only` set to `False` will likely succeed, but it can result in arbitrary code execution. Do it only if you got the file from a trusted source.
+Please file an issue with the following so that we can make `weights_only=True` compatible with your use case: WeightsUnpickler error: 
+
+Unsupported operand 248
+
+Check the documentation of torch.load to learn more about types accepted by default with weights_only https://pytorch.org/docs/stable/generated/torch.load.html.). Retrying with weights_only=False. Ensure the checkpoint is from a trusted source.

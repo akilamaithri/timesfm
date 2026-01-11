@@ -1,0 +1,9 @@
+Checking for safetensors in venv
+safetensors available in venv
+Checking for timesfm package in venv
+timesfm available in venv
+--------- Running TimesFM 2.5 Benchmark
+Loading TimesFM 2.5 from /scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5
+Compiling TimesFM 2.5 model...
+Model compiled successfully!
+Evaluating model timesfm on dataset m1_monthly

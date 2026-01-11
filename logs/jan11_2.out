@@ -1,0 +1,40 @@
+Checking for safetensors in venv
+safetensors available in venv
+Checking for timesfm package in venv
+timesfm available in venv
+--------- Running TimesFM Benchmark
+Converting safetensors checkpoint /scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5/model.safetensors -> torch .pt temporary file
+Converted checkpoint saved to /scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5/model.safetensors.pt
+Evaluating model timesfm on dataset m1_monthly
+Failed during evaluation for dataset m1_monthly: 'TimesFM_2p5_200M_torch' object has no attribute 'forecast_on_df'
+Evaluating model timesfm on dataset m1_quarterly
+Multiprocessing context has already been set.
+Failed during evaluation for dataset m1_quarterly: 'TimesFM_2p5_200M_torch' object has no attribute 'forecast_on_df'
+Evaluating model timesfm on dataset m1_yearly
+Multiprocessing context has already been set.
+Failed during evaluation for dataset m1_yearly: 'TimesFM_2p5_200M_torch' object has no attribute 'forecast_on_df'
+Evaluating model timesfm on dataset m3_monthly
+Skipping dataset m3_monthly: failed to load experiment handler: No module named 'datasetsforecast'
+Evaluating model timesfm on dataset m3_other
+Skipping dataset m3_other: failed to load experiment handler: No module named 'datasetsforecast'
+Evaluating model timesfm on dataset m3_quarterly
+Skipping dataset m3_quarterly: failed to load experiment handler: No module named 'datasetsforecast'
+Evaluating model timesfm on dataset m3_yearly
+Skipping dataset m3_yearly: failed to load experiment handler: No module named 'datasetsforecast'
+Evaluating model timesfm on dataset m4_quarterly
+Multiprocessing context has already been set.
+
+======================================================================================
+                  Resource Usage on 2026-01-11 18:51:52:
+   Job Id:             157963130.gadi-pbs
+   Project:            wd04
+   Exit Status:        271 (Linux Signal 15 SIGTERM Termination)
+   Service Units:      208.65
+   NCPUs Requested:    12                     NCPUs Used: 12              
+                                           CPU Time Used: 45:34:49        
+   Memory Requested:   128.0GB               Memory Used: 128.0GB         
+   NGPUs Requested:    1                 GPU Utilisation: 0%              
+                                         GPU Memory Used: 1.22GB          
+   Walltime requested: 10:00:00            Walltime Used: 04:20:49        
+   JobFS requested:    1.0GB                  JobFS used: 0B              
+======================================================================================

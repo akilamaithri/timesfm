@@ -1,0 +1,22 @@
+WARNING:2026-01-12 09:41:41,283:jax._src.xla_bridge:852: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:jax._src.xla_bridge:An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/scratch/wd04/sm0074/timesfm/v1/experiments/extended_benchmarks/run_timesfm_2p5.py:124: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  future_dates = pd.date_range(start=last_time, periods=horizon+1, freq=freq)[1:]
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/scratch/wd04/sm0074/timesfm/v1/experiments/extended_benchmarks/run_timesfm_2p5.py:124: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  future_dates = pd.date_range(start=last_time, periods=horizon+1, freq=freq)[1:]
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Y' is deprecated and will be removed in a future version, please use 'YE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/scratch/wd04/sm0074/timesfm/v1/experiments/extended_benchmarks/run_timesfm_2p5.py:124: FutureWarning: 'Y' is deprecated and will be removed in a future version, please use 'YE' instead.
+  future_dates = pd.date_range(start=last_time, periods=horizon+1, freq=freq)[1:]
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/scratch/wd04/sm0074/timesfm/v1/experiments/extended_benchmarks/run_timesfm_2p5.py:124: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  future_dates = pd.date_range(start=last_time, periods=horizon+1, freq=freq)[1:]
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Y' is deprecated and will be removed in a future version, please use 'YE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)

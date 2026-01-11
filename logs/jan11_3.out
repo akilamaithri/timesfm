@@ -1,0 +1,24 @@
+Checking for safetensors in venv
+safetensors available in venv
+Checking for timesfm package in venv
+timesfm available in venv
+--------- Running TimesFM 2.5 Benchmark
+Loading TimesFM 2.5 from /scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5
+Compiling TimesFM 2.5 model...
+Model compiled successfully!
+Evaluating model timesfm on dataset m1_monthly
+
+======================================================================================
+                  Resource Usage on 2026-01-11 23:48:01:
+   Job Id:             157975427.gadi-pbs
+   Project:            wd04
+   Exit Status:        271 (Linux Signal 15 SIGTERM Termination)
+   Service Units:      228.99
+   NCPUs Requested:    12                     NCPUs Used: 12              
+                                           CPU Time Used: 46:39:45        
+   Memory Requested:   128.0GB               Memory Used: 128.0GB         
+   NGPUs Requested:    1                 GPU Utilisation: 0%              
+                                         GPU Memory Used: 1.22GB          
+   Walltime requested: 10:00:00            Walltime Used: 04:46:14        
+   JobFS requested:    1.0GB                  JobFS used: 0B              
+======================================================================================

@@ -90,10 +90,11 @@ context_dict_v1 = {
 
 _MODEL_PATH = flags.DEFINE_string("model_path", "google/timesfm-2.5-200m-pytorch",
                                   "Path to model")
-_BATCH_SIZE = flags.DEFINE_integer("batch_size", 64, "Batch size")
+_BATCH_SIZE = flags.DEFINE_integer("batch_size", 16, "Batch size")
 _HORIZON = flags.DEFINE_integer("horizon", 128, "Horizon")
 _BACKEND = flags.DEFINE_string("backend", "gpu", "Backend")
 _NUM_JOBS = flags.DEFINE_integer("num_jobs", 1, "Number of jobs")
+_PER_CORE_BATCH_SIZE = flags.DEFINE_integer("per_core_batch_size", 8, "Per core batch size")
 _SAVE_DIR = flags.DEFINE_string("save_dir", "./results", "Save directory")
 
 QUANTILES = list(np.arange(1, 10) / 10.0)
@@ -110,7 +111,7 @@ def main():
   context_dict = context_dict_v1
 
   # Default local checkpoint paths (already downloaded to the node).
-  local_ckpt_2p5 = "/scratch/wd04/sm0074/timesfm/models_pytorch/model.safetensors"
+  local_ckpt_2p5 = "/scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5/model.safetensors"
   local_ckpt_2p0 = "/scratch/wd04/sm0074/timesfm/models_pytorch/torch_model.ckpt"
   # Local full snapshot directory (contains config.json + model.safetensors)
   local_snapshot_2p5 = "/scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5"
@@ -175,7 +176,7 @@ def main():
           tfm = timesfm.TimesFm(
             hparams=timesfm.TimesFmHparams(
               backend=_BACKEND.value,
-              per_core_batch_size=32,
+              per_core_batch_size=_PER_CORE_BATCH_SIZE.value,
               horizon_len=_HORIZON.value,
               num_layers=num_layers,
               context_len=max_context_len,
@@ -208,7 +209,7 @@ def main():
       tfm = timesfm.TimesFm(
         hparams=timesfm.TimesFmHparams(
           backend=_BACKEND.value,
-          per_core_batch_size=32,
+          per_core_batch_size=_PER_CORE_BATCH_SIZE.value,
           horizon_len=_HORIZON.value,
           num_layers=num_layers,
           context_len=max_context_len,
@@ -225,7 +226,7 @@ def main():
       tfm = timesfm.TimesFm(
         hparams=timesfm.TimesFmHparams(
           backend=_BACKEND.value,
-          per_core_batch_size=32,
+          per_core_batch_size=_PER_CORE_BATCH_SIZE.value,
           horizon_len=_HORIZON.value,
           num_layers=num_layers,
           context_len=max_context_len,

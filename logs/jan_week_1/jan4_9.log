@@ -1,0 +1,8 @@
+Checking for safetensors in venv
+safetensors available in venv
+Checking for timesfm package in venv
+timesfm available in venv
+--------- Running TimesFM Benchmark
+Converting safetensors checkpoint /scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5/model.safetensors -> torch .pt temporary file
+Converted checkpoint saved to /scratch/wd04/sm0074/timesfm/models_pytorch/timesfm-2p5/model.safetensors.pt
+Evaluating model timesfm on dataset m1_monthly

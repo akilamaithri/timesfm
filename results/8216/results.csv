@@ -1,0 +1,16 @@
+,dataset,metric,model,value
+0,m1_monthly,mae,timesfm,1773.9486064223597
+1,m1_monthly,mase,timesfm,1.051906133108324
+2,m1_monthly,scaled_crps,timesfm,0.14915607869625092
+3,m1_monthly,smape,timesfm,0.07128206768859688
+4,m1_monthly,time,timesfm,5.984733581542969
+0,m1_quarterly,mae,timesfm,2474.3136764924807
+1,m1_quarterly,mase,timesfm,1.7110974302726427
+2,m1_quarterly,scaled_crps,timesfm,0.09205548920565182
+3,m1_quarterly,smape,timesfm,0.08363670092367435
+4,m1_quarterly,time,timesfm,1.2585771083831787
+0,m1_yearly,mae,timesfm,139286.2954889178
+1,m1_yearly,mase,timesfm,3.596035984504289
+2,m1_yearly,scaled_crps,timesfm,0.10272601205441687
+3,m1_yearly,smape,timesfm,0.08758231759727839
+4,m1_yearly,time,timesfm,1.0848586559295654

@@ -1,0 +1,7 @@
+WARNING:2026-01-04 19:10:18,353:jax._src.xla_bridge:852: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:jax._src.xla_bridge:An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/scratch/wd04/sm0074/timesfm/.venv/lib64/python3.11/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/local/spool/pbs/mom_priv/jobs/157564479.gadi-pbs.SC: line 80: 2503880 Killed                  python v1/experiments/extended_benchmarks/run_timesfm.py --save_dir=/scratch/wd04/sm0074/timesfm/results

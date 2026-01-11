@@ -152,10 +152,18 @@ class ExperimentHandler:
       gluonts_dataset: Dataset,
       last_n: int | None = None,
   ) -> pd.DataFrame:
-    with multiprocessing.Pool(os.cpu_count()) as pool:  # Create a process pool
-      results = pool.map(
-          parallel_transform, zip(gluonts_dataset, repeat(last_n))
-      )
+    # Use single-threaded processing to avoid memory explosion on HPC systems
+    # Original code: with multiprocessing.Pool(os.cpu_count()) as pool:
+    num_workers = int(os.environ.get('GLUONTS_POOL_WORKERS', '1'))
+    if num_workers <= 1:
+      # Single-threaded mode (safer for offline/HPC environments)
+      results = [parallel_transform((ts, last_n)) for ts in gluonts_dataset]
+    else:
+      # Multi-process mode (only if explicitly requested)
+      with multiprocessing.Pool(num_workers) as pool:
+        results = pool.map(
+            parallel_transform, zip(gluonts_dataset, repeat(last_n))
+        )
     df = pd.concat(results)
     df = df.reset_index(drop=True)
     return df
